@@ -1,5 +1,6 @@
 const {Router } = require("express");
 const router = Router();
+const User = require('../models/user');
 
 router.get("/signin" , (res,req) =>{
     return res.render("signin");

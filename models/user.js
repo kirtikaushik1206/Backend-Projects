@@ -17,7 +17,7 @@ email:{
 
 salt:{
     type:String,
-    required:true,
+    
 },
 
 password:{
@@ -43,17 +43,17 @@ role:{
 {timestamps:true}
 );
  // Mongoose middleware mein hamesha regular function likhte hain kyunki this ke through hi current document ka data milta hai — arrow function mein woh context lost ho jaata hai!
- userSchema.pre("save" , function(next){
-    if(!user.isModified("password")) return;
+ userSchema.pre("save" , async function(){
+    if(!this.isModified("password")) return;
     const salt= randomBytes(16).toString(); //generated salt
    const hashedPassword= createHmac("sha256" , salt)
-   .update(user.password)
+   .update(this.password)
    .digest("hex");
 
    this.salt = salt;
    this.password= hashedPassword;
 
-   next();
+   
  });
 
 const User = model('user' , userSchema);
