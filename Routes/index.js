@@ -2,7 +2,7 @@ const {Router } = require("express");
 const router = Router();
 const User = require('../models/user');
 
-router.get("/signin" , (res,req) =>{
+router.get("/signin" , (req,res) =>{
     return res.render("signin");
 
 });
