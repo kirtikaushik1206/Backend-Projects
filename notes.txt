@@ -1,3 +1,46 @@
 index.js (Root): Entry point. It initializes Express, connects to MongoDB, sets EJS as the template engine, and forwards all requests starting with /user to our Router.
 models/user.js: The blueprint of our User database. It handles structural constraints, validation, and data security (hashing before saving and verifying during login).
 routes/index.js: Handles requests coming to /user/.... It tells Express what EJS page to show (GET) and what to do when form data is submitted (POST).
+
+Section 2: Deep Dive into the User Schema (models/user.js)
+
+
+1. The Schema Properties
+fullName & email: Required strings. email has unique: true which creates an index in MongoDB to prevent duplicate accounts.
+
+salt: A unique, random string generated per user during signup. It is used alongside the password to prevent pre-computed table attacks (Rainbow Tables).
+
+password: Encrypted string (never store plain passwords!).
+
+profileImageURL: Default fallback path /images/default1.png.
+
+role: Uses enum: ["USER", "ADMIN"] with default: "USER". It restricts values only to these two roles (prevents unauthorized role creation).
+
+timestamps: true: Automatically adds createdAt and updatedAt fields.
+
+
+
+
+2. Pre-Save Middleware (The Password Hashing Logic)
+Hum direct database me plaintext password save nahi karte. Use hash karne ke liye hum use karte hain Node.js ka built-in crypto module.
+
+📝 Code Breakdown:
+JavaScript
+userSchema.pre("save", async function() {
+  if (!this.isModified("password")) return; // Only hash if password changed
+  
+  const salt = randomBytes(16).toString(); // Generate unique salt for user
+  const hashedPassword = createHmac("sha256", salt)
+    .update(this.password)
+    .digest("hex");
+    
+  this.salt = salt;
+  this.password = hashedPassword;
+});
+pre("save", ...): Isko "Mongoose Hook" bolte hain. Database me record save hone se theek pehle ye trigger hota hai.
+
+this.isModified("password"): Agar user sirf apna naam ya avatar badal raha hai, toh hum password ko dobara hash nahi karenge (warna login kharab ho jayega).
+
+randomBytes(16): Generates 16 bytes of cryptographically secure random data.
+
+createHmac("sha256", salt): HMAC (Hash-based Message Authentication Code) hume normal SHA-256 se zyada security deta hai kyunki isme hash generate karne ke liye ek secret key (salt) pass ki jaati hai.
