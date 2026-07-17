@@ -65,3 +65,19 @@ Flow:
 2. Get stored salt 
 3.Hash user-inputted password with that salt
 4.Compare both hashes.
+
+
+
+Section 3: Understanding Routes & Form Handlers (routes/index.js)
+Humare paas do main flows hain:
+
+A. SIGNUP FLOW (Registration)
+GET /user/signup: Renders signup.ejs (Form).
+
+POST /user/signup:
+
+Frontend sends { fullName, email, password } inside req.body.
+
+Backend calls await User.create({ fullName, email, password }).
+
+Under the hood: Schema's pre("save") hook runs, hashes the password, saves it to MongoDB, and redirects to "/".
