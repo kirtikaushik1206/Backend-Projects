@@ -1,0 +1,3 @@
+index.js (Root): Entry point. It initializes Express, connects to MongoDB, sets EJS as the template engine, and forwards all requests starting with /user to our Router.
+models/user.js: The blueprint of our User database. It handles structural constraints, validation, and data security (hashing before saving and verifying during login).
+routes/index.js: Handles requests coming to /user/.... It tells Express what EJS page to show (GET) and what to do when form data is submitted (POST).
