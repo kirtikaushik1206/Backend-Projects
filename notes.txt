@@ -44,3 +44,24 @@ this.isModified("password"): Agar user sirf apna naam ya avatar badal raha hai, 
 randomBytes(16): Generates 16 bytes of cryptographically secure random data.
 
 createHmac("sha256", salt): HMAC (Hash-based Message Authentication Code) hume normal SHA-256 se zyada security deta hai kyunki isme hash generate karne ke liye ek secret key (salt) pass ki jaati hai.
+
+
+3. Custom Static Method (matchPassword)Mongoose me hum custom helper methods bana sakte hain. Humne .static method banaya jo directly Model par call ho sake (User.matchPassword(...)).📝 Code Breakdown:JavaScriptuserSchema.static("matchPassword", async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) throw new Error('User not found!');
+
+  const salt = user.salt; // 💡 IMP: Get the user's specific salt from DB!
+  const hashedPassword = user.password;
+
+  const userProvidedHash = createHmac("sha256", salt)
+    .update(password)
+    .digest("hex");
+
+  if (hashedPassword !== userProvidedHash) throw new Error('Incorrect Password');
+  return user;
+}):
+Flow: 
+1. Find user by email 
+2. Get stored salt 
+3.Hash user-inputted password with that salt
+4.Compare both hashes.
