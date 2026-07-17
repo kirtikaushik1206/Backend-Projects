@@ -61,7 +61,7 @@ role:{
  userSchema.static("matchPassword" , function (email, password){
     const user = this.findOne({email});
     if(!user) throw new Error('User not found!');
-    const salt =user.salt;
+    const salt ='someRandomSalt';
     const hashedPassword = user.password;
 
     const userProvidedHash = createHmac("sha256" , salt)
