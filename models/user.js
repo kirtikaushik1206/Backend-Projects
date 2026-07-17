@@ -58,19 +58,20 @@ role:{
  
  // we will make a Virtual function 
 
- userSchema.static("matchPassword" , function (email, password){
-    const user = this.findOne({email});
-    if(!user) throw new Error('User not found!');
-    const salt ='someRandomSalt';
-    const hashedPassword = user.password;
+ userSchema.static("matchPassword", async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) throw new Error('User not found!');
 
-    const userProvidedHash = createHmac("sha256" , salt)
+  const salt = user.salt; // Database se purana saved salt nikala
+  const hashedPassword = user.password;
+
+  const userProvidedHash = createHmac("sha256", salt)
     .update(password)
     .digest("hex");
-    if ( hashedPassword !== userProvidedHash)throw new Error('Incorrect Password') 
-    return {...user , password:undefined , salt:undefined};
-     
- });
+
+  if (hashedPassword !== userProvidedHash) throw new Error('Incorrect Password');
+  return user;
+});
 
 
 
