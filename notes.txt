@@ -81,3 +81,17 @@ Frontend sends { fullName, email, password } inside req.body.
 Backend calls await User.create({ fullName, email, password }).
 
 Under the hood: Schema's pre("save") hook runs, hashes the password, saves it to MongoDB, and redirects to "/".
+
+B. SIGNIN FLOW (Login)
+GET /user/signin: Renders signin.ejs (Form).
+
+B. SIGNIN FLOW (Login)
+GET /user/signin: Renders signin.ejs (Form).
+
+POST /user/signin:
+
+Reads { email, password } from req.body.
+
+Calls await User.matchPassword(email, password).
+
+If correct, returns user object and redirects. If incorrect, throws an error.
