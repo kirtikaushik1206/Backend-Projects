@@ -16,7 +16,7 @@ router.post("/signin" , async (req,res) =>{
     const  {email , password} = req.body;
    const token = await  User.matchPasswordAndGenerateToken(email, password);
 console.log("token" , token);
-return res.redirect("/");
+return res.cookie('token' , token ).redirect("/");
 });
 
 
