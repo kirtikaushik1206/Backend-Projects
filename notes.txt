@@ -87,7 +87,6 @@ GET /user/signin: Renders signin.ejs (Form).
 
 B. SIGNIN FLOW (Login)
 GET /user/signin: Renders signin.ejs (Form).
-
 POST /user/signin:
 
 Reads { email, password } from req.body.
@@ -95,3 +94,7 @@ Reads { email, password } from req.body.
 Calls await User.matchPassword(email, password).
 
 If correct, returns user object and redirects. If incorrect, throws an error.
+
+
+
+Token data hai, aur cookie us data ko browser mein safe rakhne ka dabba hai!
