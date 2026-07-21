@@ -98,3 +98,44 @@ If correct, returns user object and redirects. If incorrect, throws an error.
 
 
 Token data hai, aur cookie us data ko browser mein safe rakhne ka dabba hai!
+
+Authentication Middleware Notes
+Purpose
+A custom Express middleware that checks incoming HTTP requests for a specific authentication cookie. If valid, it decodes the user details from the JWT token and attaches them to req.user so subsequent routes can access the logged-in user's info.
+
+Line-by-Line Breakdown
+1. Higher-Order Middleware Wrapper (Lines 3–4)
+JavaScript
+function checkForAuthenticationCookie(cookieName) {
+    return (req, res, next) => { ... }
+}
+Why this pattern? It returns an Express middleware function (req, res, next).
+
+Flexibility: Passing cookieName allows you to reuse this middleware for any cookie key name (e.g., 'token', 'session', etc.).
+
+2. Read Cookie (Lines 5–8)
+JavaScript
+const tokenCookieValue = req.cookies[cookieName];
+if (!tokenCookieValue) {
+    return next();
+}
+Extracts the token value from req.cookies. (Note: Requires cookie-parser middleware active in Express).
+
+If no cookie exists: It calls next() immediately to let unauthenticated users proceed to public routes without throwing an error.
+
+3. Token Verification & Payload Injection (Lines 10–14)
+JavaScript
+try {
+    const userPayload = validateToken(tokenCookieValue);
+    req.user = userPayload;
+} catch(error) {}
+validateToken(): Verifies the JWT signature.
+
+req.user = userPayload: Stores user details (e.g., _id, email, role) on the req object for downstream route handlers.
+
+try...catch: Handles invalid/expired tokens gracefully without crashing the server. If verification fails, req.user simply remains undefined.
+
+4. Call Next Middleware (Line 15)
+JavaScript
+return next();
+Ensures execution always moves forward to the next middleware or route handler regardless of whether authentication succeeded or failed.
